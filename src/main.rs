@@ -26,8 +26,11 @@ pub async fn main() {
 }
 
 fn handle_get(id: u32) -> Response<Body> {
-    let pr_message = process_request(id);
-    Response::new(Body::from(pr_message))
+    let pr = process_request(id);
+    match pr {
+        Ok(value) => Response::new(Body::from(value)),
+        Err(err) => Response::new(Body::from(err.to_string())),
+    }
 }
 
 async fn handler(req: Request<Body>) -> Result<Response<Body>, Infallible> {

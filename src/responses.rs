@@ -14,22 +14,29 @@ pub fn method_not_allowed() -> Response<Body> {
         .unwrap()
 }
 
-pub fn bad_request(user_error: UserErrorMessage) -> Response<Body> {
+pub fn internal_server_error() -> Response<Body> {
+    Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(Body::from("an unexpected error occurred"))
+        .unwrap()
+}
+
+pub fn bad_request(user_error: WebErrorMessage) -> Response<Body> {
     Response::builder()
         .status(StatusCode::BAD_REQUEST)
         .body(Body::from(user_error.message()))
         .unwrap()
 }
 
-pub enum UserErrorMessage {
+pub enum WebErrorMessage {
     ZeroUserId,
 }
 
-impl UserErrorMessage {
+impl WebErrorMessage {
     fn message(&self) -> String {
         let mut error_string = String::from("error: ");
         match self {
-            UserErrorMessage::ZeroUserId => {
+            WebErrorMessage::ZeroUserId => {
                 error_string.push_str("user id cannot be 0");
             }
         }
