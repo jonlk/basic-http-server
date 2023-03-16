@@ -22,22 +22,17 @@ pub fn bad_request(user_error: UserErrorMessage) -> Response<Body> {
 }
 
 pub enum UserErrorMessage {
-    QueryString,
-    InvalidUserId,
+    ZeroUserId,
 }
 
 impl UserErrorMessage {
     fn message(&self) -> String {
         let mut error_string = String::from("error: ");
         match self {
-            UserErrorMessage::QueryString => {
-                error_string.push_str("invalid query string parameter | expected 'id='");
-            }
-            UserErrorMessage::InvalidUserId => {
-                error_string.push_str("user id not found");
+            UserErrorMessage::ZeroUserId => {
+                error_string.push_str("user id cannot be 0");
             }
         }
         error_string
     }
 }
-
