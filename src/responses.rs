@@ -21,7 +21,7 @@ pub fn internal_server_error() -> Response<Body> {
         .unwrap()
 }
 
-pub fn bad_request(user_error: WebErrorMessage) -> Response<Body> {
+pub fn bad_request(user_error: &WebErrorMessage) -> Response<Body> {
     Response::builder()
         .status(StatusCode::BAD_REQUEST)
         .body(Body::from(user_error.message()))

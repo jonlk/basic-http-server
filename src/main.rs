@@ -17,7 +17,7 @@ use std::convert::Infallible;
 pub async fn main() {
     pretty_env_logger::init();
     let make_svc = make_service_fn(move |_conn| async { Ok::<_, Infallible>(service_fn(handler)) });
-    let addr = ([127, 0, 0, 1], 3000).into();
+    let addr = ([0, 0, 0, 0], 3000).into();
     let server = Server::bind(&addr).serve(make_svc);
     info!("Listening on http://{}", addr);
     if let Err(e) = server.await {
