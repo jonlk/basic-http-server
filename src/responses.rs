@@ -28,6 +28,13 @@ pub fn bad_request(user_error: WebErrorMessage) -> Response<Body> {
         .unwrap()
 }
 
+pub fn accepted() -> Response<Body> {
+    Response::builder()
+        .status(StatusCode::ACCEPTED)
+        .body(Body::empty())
+        .unwrap()
+}
+
 pub enum WebErrorMessage {
     ZeroUserId,
 }

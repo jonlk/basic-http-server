@@ -9,7 +9,7 @@ use hyper::service::{make_service_fn, service_fn};
 use hyper::{Body, Method, Request, Response, Server, StatusCode};
 use process::process_request;
 use regex::Regex;
-use responses::bad_request;
+use responses::{accepted, bad_request, method_not_allowed, not_found};
 
 use std::convert::Infallible;
 
@@ -28,7 +28,7 @@ pub async fn main() {
 fn handle_get(id: u32) -> Response<Body> {
     let pr = process_request(id);
     match pr {
-        Ok(value) => Response::new(Body::from(value)),
+        Ok(value) => accepted(),
         Err(err) => Response::new(Body::from(err.to_string())),
     }
 }
@@ -38,19 +38,19 @@ async fn handler(req: Request<Body>) -> Result<Response<Body>, Infallible> {
     let re = Regex::new(r"^/api/v1/calculate\?id=(\d+$)").unwrap();
 
     if !re.is_match(&req_string) {
-        Ok(responses::not_found())
+        Ok(not_found())
     } else {
         match req.method() {
             &Method::GET => {
                 let capture = re.captures(&req_string).unwrap();
                 let id: u32 = String::from(&capture[1]).parse().unwrap_or_default();
                 if id == 0 {
-                    Ok(responses::not_found())
+                    Ok(not_found())
                 } else {
                     Ok(handle_get(id))
                 }
             }
-            _ => Ok(responses::method_not_allowed()),
+            _ => Ok(method_not_allowed()),
         }
     }
 }
