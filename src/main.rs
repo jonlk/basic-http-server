@@ -18,12 +18,13 @@ pub async fn main() {
     pretty_env_logger::init();
 
     let make_svc = make_service_fn(move |_conn| async { Ok::<_, Infallible>(service_fn(handler)) });
-    
+
     let addr = ([0, 0, 0, 0], 3000).into();
-    
+
     let server = Server::bind(&addr).serve(make_svc);
-    
+
     info!("Listening on http://{}", addr);
+
     if let Err(e) = server.await {
         eprintln!("server error: {}", e);
     }
@@ -36,10 +37,11 @@ fn handle_get(id: u32) -> Response<Body> {
         Err(err) => Response::new(Body::from(err.to_string())),
     }
 }
-
 async fn handler(req: Request<Body>) -> Result<Response<Body>, Infallible> {
     let req_string = req.uri().path_and_query().unwrap().as_str();
     let re = Regex::new(r"^/api/v1/calculate\?id=(\d+$)").unwrap();
+    
+    info!("Request received");
 
     if !re.is_match(&req_string) {
         Ok(not_found())
