@@ -12,7 +12,7 @@ use regex::Regex;
 
 use std::convert::Infallible;
 
-use crate::responses::{status, status_with_message};
+use crate::responses::*;
 
 #[tokio::main]
 pub async fn main() {
@@ -29,8 +29,8 @@ pub async fn main() {
 fn handle_get(id: u32) -> Response<Body> {
     let pr = process_request(id);
     match pr {
-        Ok(value) => status(StatusCode::ACCEPTED),
-        Err(err) => Response::new(Body::from(err.to_string())),
+        Ok(value) => api_response(StatusCode::ACCEPTED, None), //value not used here but could be
+        Err(err) => api_response(StatusCode::BAD_REQUEST, Some(&err.to_string())),
     }
 }
 async fn handler(req: Request<Body>) -> Result<Response<Body>, Infallible> {
@@ -41,7 +41,7 @@ async fn handler(req: Request<Body>) -> Result<Response<Body>, Infallible> {
     if !re.is_match(&req_string) {
         status_code = StatusCode::NOT_FOUND;
         info!("{:?}, {:?}", &req_string, &status_code);
-        Ok(status(status_code))
+        Ok(api_response(status_code, None))
     } else {
         match req.method() {
             &Method::GET => {
@@ -49,14 +49,14 @@ async fn handler(req: Request<Body>) -> Result<Response<Body>, Infallible> {
                 let id: u32 = String::from(&capture[1]).parse().unwrap_or_default();
                 if id == 0 {
                     status_code = StatusCode::NOT_FOUND;
-                    Ok(status_with_message(status_code, "Path not found"))
+                    Ok(api_response(status_code, Some("Path not found")))
                 } else {
                     Ok(handle_get(id))
                 }
             }
             _ => Ok({
                 status_code = StatusCode::METHOD_NOT_ALLOWED;
-                status(status_code)
+                api_response(status_code, None)
             }),
         }
     }
