@@ -1,52 +1,15 @@
 use hyper::{Body, Response, StatusCode};
 
-pub fn not_found() -> Response<Body> {
+pub fn status(status_code: StatusCode) -> Response<Body> {
     Response::builder()
-        .status(StatusCode::NOT_FOUND)
+        .status(status_code)
         .body(Body::empty())
         .unwrap()
 }
 
-pub fn method_not_allowed() -> Response<Body> {
+pub fn status_with_message(status_code: StatusCode, message: &str) -> Response<Body> {
     Response::builder()
-        .status(StatusCode::METHOD_NOT_ALLOWED)
-        .body(Body::empty())
+        .status(status_code)
+        .body(Body::from(String::from(message)))
         .unwrap()
-}
-
-pub fn internal_server_error() -> Response<Body> {
-    Response::builder()
-        .status(StatusCode::INTERNAL_SERVER_ERROR)
-        .body(Body::from("an unexpected error occurred"))
-        .unwrap()
-}
-
-pub fn bad_request(user_error: &WebErrorMessage) -> Response<Body> {
-    Response::builder()
-        .status(StatusCode::BAD_REQUEST)
-        .body(Body::from(user_error.message()))
-        .unwrap()
-}
-
-pub fn accepted() -> Response<Body> {
-    Response::builder()
-        .status(StatusCode::ACCEPTED)
-        .body(Body::empty())
-        .unwrap()
-}
-
-pub enum WebErrorMessage {
-    ZeroUserId,
-}
-
-impl WebErrorMessage {
-    fn message(&self) -> String {
-        let mut error_string = String::from("error: ");
-        match self {
-            WebErrorMessage::ZeroUserId => {
-                error_string.push_str("user id cannot be 0");
-            }
-        }
-        error_string
-    }
 }
