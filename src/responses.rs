@@ -35,6 +35,14 @@ pub fn accepted() -> Response<Body> {
         .unwrap()
 }
 
+//TODO: Finish
+pub fn status(status_code: StatusCode) -> Response<Body> {
+    Response::builder()
+        .status(status_code)
+        .body(Body::empty())
+        .unwrap()
+}
+
 pub enum WebErrorMessage {
     ZeroUserId,
 }
