@@ -16,21 +16,18 @@ use crate::responses::*;
 
 #[tokio::main]
 pub async fn main() {
+
     pretty_env_logger::init();
+    
     let make_svc = make_service_fn(move |_conn| async { Ok::<_, Infallible>(service_fn(handler)) });
     let addr = ([0, 0, 0, 0], 3000).into();
+    
     let server = Server::bind(&addr).serve(make_svc);
+    
     info!("Listening on http://{}", addr);
+    
     if let Err(e) = server.await {
         eprintln!("server error: {}", e);
-    }
-}
-
-fn handle_get(id: u32) -> Response<Body> {
-    let pr = process_request(id);
-    match pr {
-        Ok(value) => api_response(StatusCode::ACCEPTED, None), //value not used here but could be
-        Err(err) => api_response(StatusCode::BAD_REQUEST, Some(&err.to_string())),
     }
 }
 
@@ -54,5 +51,14 @@ async fn handler(req: Request<Body>) -> Result<Response<Body>, Infallible> {
             }
             _ => Ok({ api_response(StatusCode::METHOD_NOT_ALLOWED, None) }),
         }
+    }
+}
+
+
+fn handle_get(id: u32) -> Response<Body> {
+    let pr = process_request(id);
+    match pr {
+        Ok(value) => api_response(StatusCode::ACCEPTED, None), //value not used here but could be
+        Err(err) => api_response(StatusCode::BAD_REQUEST, Some(&err.to_string())),
     }
 }
